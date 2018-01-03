@@ -1,0 +1,227 @@
+ca65 V2.13.3 - (C) Copyright 1998-2012 Ullrich von Bassewitz
+Main file   : main.s
+Current file: main.s
+
+000000r 1               ;-----------------------------------------------------------------------------------------
+000000r 1               ;  main.s
+000000r 1               ;  NoxMidiDriver
+000000r 1               ;
+000000r 1               ;  Created by Eric Rangell on 1/2/18.
+000000r 1               ;  Copyright © 2018 Eric Rangell for Nox Archaist. All rights reserved.
+000000r 1               ;
+000000r 1               ;  Passport MIDI Interface Interrupt Playback Driver for Nox Archaist
+000000r 1               ;  This driver would be loaded only if the user selects Passport MIDI for music output.
+000000r 1               ;  When the Interrupt Activation routine is called, binary files in the current prefix directory
+000000r 1               ;  named S###.MCK will be played sequentially. (ex: S000.MCK, S001.MCK, S002.MCK)
+000000r 1               ;  The MCK file format will be defined by the sound engineering team, and translated to MIDI messages.
+000000r 1               ;  ProRWTS will double buffer the song data 512 bytes at a time to AUX memory.
+000000r 1               ;  Each song will loop until the Advance command or Silence command is sent by the main program.
+000000r 1               ;  The playlist will repeat (return to S000.MCK) when the next sequential song file cannot be found.
+000000r 1               ;
+000000r 1               ;  Build pipeline: https://github.com/jeremysrand/Apple2BuildPipeline
+000000r 1               ;  Changed disk template to Prodos 2.4.1
+000000r 1               ;-----------------------------------------------------------------------------------------
+000000r 1               AUXBUF1     = $1000             ;beginning of 758 bytes of aux memory for double buffering disk blocks
+000000r 1               AUXBUF2     = AUXBUF1 + $0100
+000000r 1               AUXBUF3     = AUXBUF2 + $0100
+000000r 1               ;-----------------------------------------------------------------------------------------
+000000r 1               MLI         = $BF00     ;prodos machine language interface
+000000r 1               PRINTHEX    = $FDDA     ;print accumulator value in hex
+000000r 1               ;-----------------------------------------------------------------------------------------
+000000r 1               main:
+000000r 1  00               brk                 ;do not BRUN - BLOAD, set slot, then call $6F02
+000001r 1               ;
+000001r 1  02           midislot:   .byte $02   ;default passport midi slot = 2
+000002r 1               ;
+000002r 1  20 rr rr         jsr cfgslot
+000005r 1  20 rr rr         jsr allocint
+000008r 1               ;-----------------------------------------------------------------------------------------
+000008r 1               midiinit:
+000008r 1  A9 13            lda #$13    ; init and reset ACIA chip
+00000Ar 1               mod1:
+00000Ar 1  8D A8 C0         sta $C0A8   ; control register for slot 2
+00000Dr 1  A9 11            lda #$11
+00000Fr 1               mod2:
+00000Fr 1  8D A8 C0         sta $C0A8
+000012r 1  60               rts
+000013r 1               ;-----------------------------------------------------------------------------------------
+000013r 1               cfgslot:
+000013r 1  AD rr rr         lda midislot
+000016r 1  29 F8            and #$F8
+000018r 1  D0 62            bne errbrk     ;slot >7 invalid
+00001Ar 1  AD rr rr         lda midislot
+00001Dr 1  29 07            and #07
+00001Fr 1  F0 5B            beq errbrk      ;slot 0 invalid
+000021r 1  09 08            ora #$08        ;Derive MIDI slot address   C098 = slot1, C0A8 = slot2, C0F8 = slot7
+000023r 1  38               sec
+000024r 1  2A               rol             ;This creates the 8 in the lower nibble
+000025r 1  0A               asl
+000026r 1  0A               asl
+000027r 1  0A               asl
+000028r 1  8D rr rr         sta mod1+1      ; self modify addresses in subroutines below
+00002Br 1  8D rr rr         sta mod2+1
+00002Er 1  8D rr rr         sta midiout+1
+000031r 1  18               clc
+000032r 1  69 01            adc #$01
+000034r 1  8D rr rr         sta mod3+1
+000037r 1  38               sec
+000038r 1  E9 09            sbc #09     ;derive address of control register (C090=slot1, C0A0=slot2, C0F0=slot7)
+00003Ar 1  8D rr rr         sta mod4+1
+00003Dr 1  8D rr rr         sta mod6+1
+000040r 1  8D rr rr         sta mod8+1
+000043r 1  8D rr rr         sta mod10+1
+000046r 1  8D rr rr         sta mod11+1
+000049r 1  8D rr rr         sta mod12+1
+00004Cr 1  8D rr rr         sta imod2+1
+00004Fr 1  8D rr rr         sta imod3+1
+000052r 1  8D rr rr         sta imod4+1
+000055r 1  18               clc
+000056r 1  69 01            adc #$01    ;C091, C0A1, ... C0F1
+000058r 1  8D rr rr         sta mod5+1
+00005Br 1  8D rr rr         sta imod1+1
+00005Er 1  69 03            adc #$03    ;C094, C0A4, ... C0F4
+000060r 1  8D rr rr         sta mod7+1
+000063r 1  69 01            adc #01     ;C095, C0A5, ... C0F5
+000065r 1  8D rr rr         sta mod9+1
+000068r 1               ;
+000068r 1  60               rts
+000069r 1               ;
+000069r 1  02           pallocint:  .byte $02   ;mli parm area for alloc interrupt
+00006Ar 1  00           pintnum:    .byte $00   ;interrupt number (1-4) returned here
+00006Br 1  rr rr        pintadrs:   .byte <inthand, >inthand
+00006Dr 1               ;
+00006Dr 1               allocint:
+00006Dr 1  20 00 BF         jsr MLI
+000070r 1  40               .byte $40
+000071r 1  rr               .byte <pallocint
+000072r 1  rr               .byte >pallocint
+000073r 1  B0 07            bcs errbrk
+000075r 1  AD rr rr         lda pintnum
+000078r 1  8D rr rr         sta pdeintnum
+00007Br 1  60               rts
+00007Cr 1               ;-----------------------------------------------------------------------------------------
+00007Cr 1               ; ERROR CODES:
+00007Cr 1               ; 00 = slot 0 invalid for midi slot
+00007Cr 1               ; > 07 = slot >7 invalid for midi slot
+00007Cr 1               ;-----------------------------------------------------------------------------------------
+00007Cr 1               errbrk:
+00007Cr 1  20 DA FD         jsr PRINTHEX
+00007Fr 1  00               brk
+000080r 1               ;-----------------------------------------------------------------------------------------
+000080r 1               ;
+000080r 1               ; above code uses exactly $80 bytes
+000080r 1               ;
+000080r 1               ;-------------------- configuration code above not needed after it runs ------------------
+000080r 1               ;
+000080r 1               maincode:
+000080r 1  4C rr rr         jmp midiout             ; call to send midi bytes
+000083r 1               ;
+000083r 1  90           midibyte:   .byte $90       ;user pokes midi data byte to send out on the wire
+000084r 1  00           temporeq:   .byte $00       ;to request tempo change, populate inttimer and set to non-zero
+000085r 1  88 08        inttimer:   .byte $88,$08   ;timer interrupt value - set based on tempo of song
+000087r 1               ;-----------------------------------------------------------------------------------------
+000087r 1  4C rr rr         jmp activateint         ; call when ready to play 512 byte buffer from aux queue
+00008Ar 1  4C rr rr         jmp deactivateint       ; call to stop timer interrupts (pause, panic)
+00008Dr 1  4C rr rr         jmp deallocint          ; call when exiting program
+000090r 1               ;-----------------------------------------------------------------------------------------
+000090r 1               ;
+000090r 1  01           pdeallint:  .byte $01       ;MLI parameter list for Deallocate Interrupt
+000091r 1  00           pdeintnum:  .byte $00
+000092r 1               ;
+000092r 1               ;-----------------------------------------------------------------------------------------
+000092r 1               deallocint:
+000092r 1  20 00 BF         jsr MLI
+000095r 1  41               .byte $41
+000096r 1  rr rr            .byte <pdeallint, >pdeallint
+000098r 1  B0 01            bcs errbrkmain
+00009Ar 1  60               rts
+00009Br 1               ;-----------------------------------------------------------------------------------------
+00009Br 1               errbrkmain:
+00009Br 1  20 DA FD         jsr PRINTHEX
+00009Er 1  00               brk
+00009Fr 1               ;-----------------------------------------------------------------------------------------
+00009Fr 1               midiout:
+00009Fr 1  AD A8 C0         lda $C0A8   ; wait for transmit data register empty
+0000A2r 1  29 02            and #$02
+0000A4r 1  F0 F9            beq midiout
+0000A6r 1  AD rr rr         lda midibyte
+0000A9r 1               mod3:
+0000A9r 1  8D A9 C0         sta $C0A9   ; send user's byte out on the wire
+0000ACr 1  60               rts
+0000ADr 1               ;-----------------------------------------------------------------------------------------
+0000ADr 1               deactivateint:
+0000ADr 1  08               php
+0000AEr 1  78               sei
+0000AFr 1  A9 01            lda #$01
+0000B1r 1               imod4:
+0000B1r 1  8D A0 C0         sta $C0A0   ;stop 6840 PTM timer in case it was running
+0000B4r 1  28               plp
+0000B5r 1  60               rts
+0000B6r 1               ;-----------------------------------------------------------------------------------------
+0000B6r 1               activateint:
+0000B6r 1  A9 01            lda #$01
+0000B8r 1               mod4:
+0000B8r 1  8D A0 C0         sta $C0A0   ;stop 6840 PTM timer in case it was running
+0000BBr 1  08               php
+0000BCr 1  78               sei         ;disable interrupts while setting timer
+0000BDr 1  A9 43            lda #$43    ;reset 6840 PTM
+0000BFr 1               mod5:
+0000BFr 1  8D A1 C0         sta $C0A1
+0000C2r 1  20 rr rr         jsr tempochg
+0000C5r 1  A9 01            lda #$01    ;write control register 2
+0000C7r 1               mod10:
+0000C7r 1  8D A0 C0         sta $C0A0
+0000CAr 1  A9 C3            lda #$C3    ;CONTINUOUS, IRQ AND TIMER OUTPUT ENABLED
+0000CCr 1               mod11:
+0000CCr 1  8D A0 C0         sta $C0A0
+0000CFr 1  A9 00            lda #$00    ;zero control register 1 to activate timer
+0000D1r 1               mod12:
+0000D1r 1  8D A0 C0         sta $c0A0   ;timer interrupts are active now
+0000D4r 1  28               plp
+0000D5r 1  60               rts
+0000D6r 1               ;-----------------------------------------------------------------------------------------
+0000D6r 1               tempochg:
+0000D6r 1  A9 04            lda #$04    ; register #4
+0000D8r 1               mod6:
+0000D8r 1  8D A0 C0         sta $C0A0
+0000DBr 1  AD rr rr         lda inttimer+1  ;high byte of timer value
+0000DEr 1               mod7:
+0000DEr 1  8D A4 C0         sta $C0A4
+0000E1r 1  A9 05            lda #$05    ; register #5
+0000E3r 1               mod8:
+0000E3r 1  8D A0 C0         sta $C0A0
+0000E6r 1  AD rr rr         lda inttimer  ;low byte of timer value
+0000E9r 1               mod9:
+0000E9r 1  8D A5 C0         sta $C0A5
+0000ECr 1  A9 00            lda #$00
+0000EEr 1  8D rr rr         sta temporeq
+0000F1r 1  60               rts
+0000F2r 1               ;-----------------------------------------------------------------------------------------
+0000F2r 1               notours:
+0000F2r 1  38               sec     ;do not claim the interrupt - return to Prodos
+0000F3r 1  60               rts
+0000F4r 1               ;
+0000F4r 1               inthand:
+0000F4r 1  D8               cld         ;required for Prodos interrupt handler
+0000F5r 1               imod1:
+0000F5r 1  AD A1 C0         lda $C0A1   ;check clock interrupt flag
+0000F8r 1  10 F8            bpl notours
+0000FAr 1  A9 01            lda #$01
+0000FCr 1               imod2:
+0000FCr 1  8D A0 C0         sta $C0A0   ;stop clock during interrupt processing
+0000FFr 1               ;-----------------------------------------------------------------------------------------
+0000FFr 1  2C 30 C0         bit $c030   ;test interrupt processing
+000102r 1               ;-----------------------------------------------------------------------------------------
+000102r 1  AD rr rr         lda temporeq
+000105r 1  F0 03            beq strtclck
+000107r 1  20 rr rr         jsr tempochg
+00010Ar 1               strtclck:
+00010Ar 1  A9 00            lda #$00    ;restart clock
+00010Cr 1               imod3:
+00010Cr 1  8D A0 C0         sta $C0A0
+00010Fr 1  18               clc         ;claim the interrupt
+000110r 1  60               rts
+000111r 1               ;-----------------------------------------------------------------------------------------
+000111r 1               mainend:
+000111r 1  00               brk
+000111r 1               

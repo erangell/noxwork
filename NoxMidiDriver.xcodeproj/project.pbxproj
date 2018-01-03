@@ -1,0 +1,253 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 48;
+	objects = {
+
+/* Begin PBXFileReference section */
+		2C72FDC31FFB6CB700A75466 /* main.s */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.asm; path = main.s; sourceTree = "<group>"; };
+		2C72FDC41FFB6CB700A75466 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		2C72FDC61FFB6CB700A75466 /* AppleCommander.jar */ = {isa = PBXFileReference; lastKnownFileType = archive.jar; name = AppleCommander.jar; path = make/AppleCommander.jar; sourceTree = "<group>"; };
+		2C72FDC71FFB6CB700A75466 /* createDiskImage */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; name = createDiskImage; path = make/createDiskImage; sourceTree = "<group>"; };
+		2C72FDC81FFB6CB700A75466 /* DevApple.vii */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; name = DevApple.vii; path = make/DevApple.vii; sourceTree = "<group>"; };
+		2C72FDC91FFB6CB700A75466 /* dos33_template.dsk */ = {isa = PBXFileReference; lastKnownFileType = file; name = dos33_template.dsk; path = make/dos33_template.dsk; sourceTree = "<group>"; };
+		2C72FDCA1FFB6CB700A75466 /* head.mk */ = {isa = PBXFileReference; lastKnownFileType = text; name = head.mk; path = make/head.mk; sourceTree = "<group>"; };
+		2C72FDCB1FFB6CB700A75466 /* prodos_template.dsk */ = {isa = PBXFileReference; lastKnownFileType = file; name = prodos_template.dsk; path = make/prodos_template.dsk; sourceTree = "<group>"; };
+		2C72FDCC1FFB6CB700A75466 /* tail.mk */ = {isa = PBXFileReference; lastKnownFileType = text; name = tail.mk; path = make/tail.mk; sourceTree = "<group>"; };
+		2C72FDCD1FFB6CB700A75466 /* V2Make.scpt */ = {isa = PBXFileReference; lastKnownFileType = file; name = V2Make.scpt; path = make/V2Make.scpt; sourceTree = "<group>"; };
+		2C72FDD31FFB730100A75466 /* ProDOS_2_4_1.dsk */ = {isa = PBXFileReference; lastKnownFileType = file; name = ProDOS_2_4_1.dsk; path = make/ProDOS_2_4_1.dsk; sourceTree = "<group>"; };
+		2C81EADA1FFCFC850045AA39 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		2C72FDBC1FFB6CB700A75466 = {
+			isa = PBXGroup;
+			children = (
+				2C81EADA1FFCFC850045AA39 /* README.md */,
+				2C72FDC21FFB6CB700A75466 /* NoxMidiDriver */,
+			);
+			sourceTree = "<group>";
+		};
+		2C72FDC21FFB6CB700A75466 /* NoxMidiDriver */ = {
+			isa = PBXGroup;
+			children = (
+				2C72FDC31FFB6CB700A75466 /* main.s */,
+				2C72FDC41FFB6CB700A75466 /* Makefile */,
+				2C72FDC51FFB6CB700A75466 /* make */,
+			);
+			path = NoxMidiDriver;
+			sourceTree = "<group>";
+		};
+		2C72FDC51FFB6CB700A75466 /* make */ = {
+			isa = PBXGroup;
+			children = (
+				2C72FDD31FFB730100A75466 /* ProDOS_2_4_1.dsk */,
+				2C72FDC61FFB6CB700A75466 /* AppleCommander.jar */,
+				2C72FDC71FFB6CB700A75466 /* createDiskImage */,
+				2C72FDC81FFB6CB700A75466 /* DevApple.vii */,
+				2C72FDC91FFB6CB700A75466 /* dos33_template.dsk */,
+				2C72FDCA1FFB6CB700A75466 /* head.mk */,
+				2C72FDCB1FFB6CB700A75466 /* prodos_template.dsk */,
+				2C72FDCC1FFB6CB700A75466 /* tail.mk */,
+				2C72FDCD1FFB6CB700A75466 /* V2Make.scpt */,
+			);
+			name = make;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		2C72FDC11FFB6CB700A75466 /* NoxMidiDriver */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "-C NoxMidiDriver $(ACTION)";
+			buildConfigurationList = 2C72FDD01FFB6CB700A75466 /* Build configuration list for PBXLegacyTarget "NoxMidiDriver" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			dependencies = (
+			);
+			name = NoxMidiDriver;
+			passBuildSettingsInEnvironment = 1;
+			productName = NoxMidiDriver;
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXProject section */
+		2C72FDBD1FFB6CB700A75466 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0920;
+				ORGANIZATIONNAME = "Eric Rangell";
+				TargetAttributes = {
+					2C72FDC11FFB6CB700A75466 = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 2C72FDC01FFB6CB700A75466 /* Build configuration list for PBXProject "NoxMidiDriver" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 2C72FDBC1FFB6CB700A75466;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2C72FDC11FFB6CB700A75466 /* NoxMidiDriver */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		2C72FDCE1FFB6CB700A75466 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+			};
+			name = Debug;
+		};
+		2C72FDCF1FFB6CB700A75466 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+			};
+			name = Release;
+		};
+		2C72FDD11FFB6CB700A75466 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEBUGGING_SYMBOLS = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		2C72FDD21FFB6CB700A75466 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2C72FDC01FFB6CB700A75466 /* Build configuration list for PBXProject "NoxMidiDriver" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2C72FDCE1FFB6CB700A75466 /* Debug */,
+				2C72FDCF1FFB6CB700A75466 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2C72FDD01FFB6CB700A75466 /* Build configuration list for PBXLegacyTarget "NoxMidiDriver" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2C72FDD11FFB6CB700A75466 /* Debug */,
+				2C72FDD21FFB6CB700A75466 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2C72FDBD1FFB6CB700A75466 /* Project object */;
+}
