@@ -181,47 +181,50 @@ Current file: main.s
 0000D5r 1  60               rts
 0000D6r 1               ;-----------------------------------------------------------------------------------------
 0000D6r 1               tempochg:
-0000D6r 1  A9 04            lda #$04    ; register #4
-0000D8r 1               mod6:
-0000D8r 1  8D A0 C0         sta $C0A0
-0000DBr 1  AD rr rr         lda inttimer+1  ;high byte of timer value
-0000DEr 1               mod7:
-0000DEr 1  8D A4 C0         sta $C0A4
-0000E1r 1  A9 05            lda #$05    ; register #5
-0000E3r 1               mod8:
-0000E3r 1  8D A0 C0         sta $C0A0
-0000E6r 1  AD rr rr         lda inttimer  ;low byte of timer value
-0000E9r 1               mod9:
-0000E9r 1  8D A5 C0         sta $C0A5
-0000ECr 1  A9 00            lda #$00
-0000EEr 1  8D rr rr         sta temporeq
-0000F1r 1  60               rts
-0000F2r 1               ;-----------------------------------------------------------------------------------------
-0000F2r 1               notours:
-0000F2r 1  38               sec     ;do not claim the interrupt - return to Prodos
-0000F3r 1  60               rts
-0000F4r 1               ;
-0000F4r 1               inthand:
-0000F4r 1  D8               cld         ;required for Prodos interrupt handler
-0000F5r 1               imod1:
-0000F5r 1  AD A1 C0         lda $C0A1   ;check clock interrupt flag
-0000F8r 1  10 F8            bpl notours
-0000FAr 1  A9 01            lda #$01
-0000FCr 1               imod2:
-0000FCr 1  8D A0 C0         sta $C0A0   ;stop clock during interrupt processing
-0000FFr 1               ;-----------------------------------------------------------------------------------------
-0000FFr 1  2C 30 C0         bit $c030   ;test interrupt processing
-000102r 1               ;-----------------------------------------------------------------------------------------
-000102r 1  AD rr rr         lda temporeq
-000105r 1  F0 03            beq strtclck
-000107r 1  20 rr rr         jsr tempochg
-00010Ar 1               strtclck:
-00010Ar 1  A9 00            lda #$00    ;restart clock
-00010Cr 1               imod3:
-00010Cr 1  8D A0 C0         sta $C0A0
-00010Fr 1  18               clc         ;claim the interrupt
-000110r 1  60               rts
-000111r 1               ;-----------------------------------------------------------------------------------------
-000111r 1               mainend:
-000111r 1  00               brk
-000111r 1               
+0000D6r 1  AD rr rr         lda inttimer+1  ; high byte of timer value
+0000D9r 1  F0 16            beq tmpodone    ; prevent high byte from being zero - you lose control of your apple
+0000DBr 1  A9 04            lda #$04    ; register #4
+0000DDr 1               mod6:
+0000DDr 1  8D A0 C0         sta $C0A0
+0000E0r 1  AD rr rr         lda inttimer+1  ;high byte of timer value
+0000E3r 1               mod7:
+0000E3r 1  8D A4 C0         sta $C0A4
+0000E6r 1  A9 05            lda #$05    ; register #5
+0000E8r 1               mod8:
+0000E8r 1  8D A0 C0         sta $C0A0
+0000EBr 1  AD rr rr         lda inttimer  ;low byte of timer value
+0000EEr 1               mod9:
+0000EEr 1  8D A5 C0         sta $C0A5
+0000F1r 1               tmpodone:
+0000F1r 1  A9 00            lda #$00
+0000F3r 1  8D rr rr         sta temporeq
+0000F6r 1  60               rts
+0000F7r 1               ;-----------------------------------------------------------------------------------------
+0000F7r 1               notours:
+0000F7r 1  38               sec     ;do not claim the interrupt - return to Prodos
+0000F8r 1  60               rts
+0000F9r 1               ;
+0000F9r 1               inthand:
+0000F9r 1  D8               cld         ;required for Prodos interrupt handler
+0000FAr 1               imod1:
+0000FAr 1  AD A1 C0         lda $C0A1   ;check clock interrupt flag
+0000FDr 1  10 F8            bpl notours
+0000FFr 1  A9 01            lda #$01
+000101r 1               imod2:
+000101r 1  8D A0 C0         sta $C0A0   ;stop clock during interrupt processing
+000104r 1               ;-----------------------------------------------------------------------------------------
+000104r 1  2C 30 C0         bit $c030   ;test interrupt processing
+000107r 1               ;-----------------------------------------------------------------------------------------
+000107r 1  AD rr rr         lda temporeq
+00010Ar 1  F0 03            beq strtclck
+00010Cr 1  20 rr rr         jsr tempochg
+00010Fr 1               strtclck:
+00010Fr 1  A9 00            lda #$00    ;restart clock
+000111r 1               imod3:
+000111r 1  8D A0 C0         sta $C0A0
+000114r 1  18               clc         ;claim the interrupt
+000115r 1  60               rts
+000116r 1               ;-----------------------------------------------------------------------------------------
+000116r 1               mainend:
+000116r 1  00               brk
+000116r 1               

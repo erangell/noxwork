@@ -177,6 +177,8 @@ mod12:
     rts
 ;-----------------------------------------------------------------------------------------
 tempochg:
+    lda inttimer+1  ; high byte of timer value
+    beq tmpodone    ; prevent high byte from being zero - you lose control of your apple
     lda #$04    ; register #4
 mod6:
     sta $C0A0
@@ -189,6 +191,7 @@ mod8:
     lda inttimer  ;low byte of timer value
 mod9:
     sta $C0A5
+tmpodone:
     lda #$00
     sta temporeq
     rts
