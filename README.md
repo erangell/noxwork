@@ -1,52 +1,60 @@
 # noxwork
 
-This is a test of a Passport MIDI interface interrupt-driven playback routine that will play a MCK file (format to be defined)
-using double-buffering to 768 bytes of AUX memory.  The objective is to keep the main memory footprint as small as possible.
-The idea is that when the user selects their sound output device, the appropriate driver will be loaded and initialized.
-The loader/relocation/initialization code can then be discarded/overwritten leaving the driver and interrupt handler in main memory.
+This branch contains a Mockingboard Interrupt Test routine which assembles at $A900
 
-After booting the floppy disk image:
+It is intended for benchmarking to find out how music interrupts affect game performance.
 
-BLOAD NOXMIDI
+The Mockingboard must be installed in Slot 4.
 
-CALL -151
-6F81: 01        poke the slot number of your Passport MIDI card
+To load it from BASIC:
 
-6F82G           configures the code for the selected slot, allocates interrupt handler, initializes ACIA
+BLOAD NOXMIDI,A$6900
 
-at this point, memory from 6F80-6FFF is no longer used.
+CALL-151
 
-7000L
+A900<6900.69FFM
 
-7003: midi byte
+A900G - Initializes Mockingboard 6522 chip for left speaker.
 
-7000G - send midi byte
+A903G - Activate Interrupts - you will hear the Apple speaker clicking on each interrupt.
 
-example:    7003:90 N 7000G N 7003:3C N 7000G N 7003:40 N 7000G
+A906G - Deactivate interrupts - to stop the timer interrupts.
 
-you should hear a middle C playing
+The following parameters may be adjusted while interrupts are active:
 
-7003:3C N 7000G N 7003:00 N 7000G
+A909.A911 - display values of all parameters
 
-you should hear the middle C stop playing
+A909 =  inttimer:   .byte $ff,$40   ;timer interrupt value - set based on tempo of song
 
-Interrupt test:
+Do not set the INTTIMER value below $3000 - the interrupt routine seems to stop.
 
-7005 and 7006 - initial timer value (lo, hi)
+A90B = temporeq:   .byte $00       ;to request tempo change, populate inttimer and set to non-zero
 
-7007G - activate interrupts
+Example: To request a longer timer value:
 
-Interrupt handler is at 7074
+A909: 00 80 01
 
-currently clicks speaker on each interrupt (707F)
+This sets the timer value to $8000 and requests the interrupt routine to change the tempo.
 
-Caller may request a tempo change by storing new tempo in 7005,7006 and setting 7004 to a non-zero value.
+You should hear slower clicks
 
-This will also be used when a tempo change command is processed in the MIDI data.
+A90C = intdelay:   .byte $01       ;use to simulate the amount of work done in the interrupt handler
 
-Added Range checking on TEMPO value to prevent CPU overload if interrupts too fast:
+Use powers of 2 to see the effect of more work done in the interrupt handler, example:
 
-High byte of Tempo value cannot equal zero.  If it is, tempo does not get changed, no warning/error.
+Press Control G a few times to hear the beep
 
+A90C:8
 
+Press Control G a few times to hear how the beep is slower when more work is done on the interrupt
+
+A90D = clickon:     .byte $01       ;turn on/turn off click on interrupt
+
+Use this before playing the game to turn off the clicking after setting your test parameters.
+
+A90E = intcount:   .byte $00,$00,$00,$00   ;number of interrupts processed
+
+This 4 byte counter will increment once for each interrupt.
+
+To verify that the interrupt routine is active, type A90E.A911 several times - you should see different values
 

@@ -36,7 +36,8 @@ PGM=NoxMidi
 
 # Uncomment and set this to your starting address in Apple II memory
 # if necessary:
-     START_ADDR = 6F80
+# CHANGE TO 6900 FOR DEBUGGING
+     START_ADDR = A900
 
 # Set the default CPU to assemble for.  You can change this in the
 # body of a .s file using control commands like ".PC02".  Uncomment
