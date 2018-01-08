@@ -20,12 +20,17 @@
 AUXBUF1     = $1000             ;beginning of 758 bytes of aux memory for double buffering disk blocks
 AUXBUF2     = AUXBUF1 + $0100
 AUXBUF3     = AUXBUF2 + $0100
+AUXEND      = AUXBUF3 + $0100
 ;-----------------------------------------------------------------------------------------
 MLI         = $BF00     ;prodos machine language interface
 PRINTHEX    = $FDDA     ;print accumulator value in hex
+AUXMOVE     = $C311
+OLDSTRT     = $003C
+OLDEND      = $003E
+NEWSTRT     = $0042
 ;-----------------------------------------------------------------------------------------
 main:
-    brk                 ;do not BRUN - BLOAD, set slot, then call $6F02
+    brk                 ;do not BRUN - BLOAD, set slot, then call $6F82
 ;
 midislot:   .byte $02   ;default passport midi slot = 2
 ;
@@ -196,6 +201,20 @@ tmpodone:
     sta temporeq
     rts
 ;-----------------------------------------------------------------------------------------
+; Data for Interrupt Handler
+;-----------------------------------------------------------------------------------------
+bytebufs:   .byte $00,$00,$00,$00,$00,$00,$00 ;8 byte buffer for reading data from Aux mem
+bytebufe:   .byte $00
+;
+qbegin:     .byte <AUXBUF1, >AUXBUF1    ;AUX MEM BEGIN OF QUEUE
+qend:       .byte <AUXEND,  >AUXEND     ;AUX MEM END OF QUEUE + 1
+qstat:      .byte $00                   ;QUEUE STATUS: 0=EMPTY, FF=FULL, 1=IN USE
+qhead:      .byte <AUXBUF1, >AUXBUF1    ;HEAD POINTER
+qtail:      .byte <AUXEND,  >AUXEND     ;TAIL POINTER
+dlystat:    .byte $00                   ;FF=DELAY IN PROGRESS, 00=NO DELAY, 1,2=DELAY BEING READ
+laststat:   .byte $90                   ;LAST STATUS BYTE READ
+lastdata:   .byte $90                   ;LAST DATA BYTE PROCESSED
+;-----------------------------------------------------------------------------------------
 notours:
     sec     ;do not claim the interrupt - return to Prodos
     rts
@@ -209,7 +228,7 @@ imod1:
 imod2:
     sta $C0A0   ;stop clock during interrupt processing
 ;-----------------------------------------------------------------------------------------
-    bit $c030   ;test interrupt processing
+    bit $c030   ;test interrupt processin
 ;-----------------------------------------------------------------------------------------
     lda temporeq
     beq strtclck
@@ -223,3 +242,6 @@ imod3:
 ;-----------------------------------------------------------------------------------------
 mainend:
     brk
+
+
+

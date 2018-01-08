@@ -50,3 +50,12 @@ High byte of Tempo value cannot equal zero.  If it is, tempo does not get change
 
 
 
+Testing interrupt driven MIDI playback:
+
+- First call a routine to load the song file (S000.MCK) to aux memory (The disk image does this)
+
+- BLOAD NOXMIDI - follow instructions above to configure slot
+
+- 7007G to activate interrupts
+
+

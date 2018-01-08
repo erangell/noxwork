@@ -24,12 +24,17 @@ Current file: main.s
 000000r 1               AUXBUF1     = $1000             ;beginning of 758 bytes of aux memory for double buffering disk blocks
 000000r 1               AUXBUF2     = AUXBUF1 + $0100
 000000r 1               AUXBUF3     = AUXBUF2 + $0100
+000000r 1               AUXEND      = AUXBUF3 + $0100
 000000r 1               ;-----------------------------------------------------------------------------------------
 000000r 1               MLI         = $BF00     ;prodos machine language interface
 000000r 1               PRINTHEX    = $FDDA     ;print accumulator value in hex
+000000r 1               AUXMOVE     = $C311
+000000r 1               OLDSTRT     = $003C
+000000r 1               OLDEND      = $003E
+000000r 1               NEWSTRT     = $0042
 000000r 1               ;-----------------------------------------------------------------------------------------
 000000r 1               main:
-000000r 1  00               brk                 ;do not BRUN - BLOAD, set slot, then call $6F02
+000000r 1  00               brk                 ;do not BRUN - BLOAD, set slot, then call $6F82
 000001r 1               ;
 000001r 1  02           midislot:   .byte $02   ;default passport midi slot = 2
 000002r 1               ;
@@ -200,31 +205,49 @@ Current file: main.s
 0000F3r 1  8D rr rr         sta temporeq
 0000F6r 1  60               rts
 0000F7r 1               ;-----------------------------------------------------------------------------------------
-0000F7r 1               notours:
-0000F7r 1  38               sec     ;do not claim the interrupt - return to Prodos
-0000F8r 1  60               rts
-0000F9r 1               ;
-0000F9r 1               inthand:
-0000F9r 1  D8               cld         ;required for Prodos interrupt handler
-0000FAr 1               imod1:
-0000FAr 1  AD A1 C0         lda $C0A1   ;check clock interrupt flag
-0000FDr 1  10 F8            bpl notours
-0000FFr 1  A9 01            lda #$01
-000101r 1               imod2:
-000101r 1  8D A0 C0         sta $C0A0   ;stop clock during interrupt processing
-000104r 1               ;-----------------------------------------------------------------------------------------
-000104r 1  2C 30 C0         bit $c030   ;test interrupt processing
-000107r 1               ;-----------------------------------------------------------------------------------------
-000107r 1  AD rr rr         lda temporeq
-00010Ar 1  F0 03            beq strtclck
-00010Cr 1  20 rr rr         jsr tempochg
-00010Fr 1               strtclck:
-00010Fr 1  A9 00            lda #$00    ;restart clock
-000111r 1               imod3:
-000111r 1  8D A0 C0         sta $C0A0
-000114r 1  18               clc         ;claim the interrupt
-000115r 1  60               rts
-000116r 1               ;-----------------------------------------------------------------------------------------
-000116r 1               mainend:
-000116r 1  00               brk
-000116r 1               
+0000F7r 1               ; Data for Interrupt Handler
+0000F7r 1               ;-----------------------------------------------------------------------------------------
+0000F7r 1  00 00 00 00  bytebufs:   .byte $00,$00,$00,$00,$00,$00,$00 ;8 byte buffer for reading data from Aux mem
+0000FBr 1  00 00 00     
+0000FEr 1  00           bytebufe:   .byte $00
+0000FFr 1               ;
+0000FFr 1  00 10        qbegin:     .byte <AUXBUF1, >AUXBUF1    ;AUX MEM BEGIN OF QUEUE
+000101r 1  00 13        qend:       .byte <AUXEND,  >AUXEND     ;AUX MEM END OF QUEUE + 1
+000103r 1  00           qstat:      .byte $00                   ;QUEUE STATUS: 0=EMPTY, FF=FULL, 1=IN USE
+000104r 1  00 10        qhead:      .byte <AUXBUF1, >AUXBUF1    ;HEAD POINTER
+000106r 1  00 13        qtail:      .byte <AUXEND,  >AUXEND     ;TAIL POINTER
+000108r 1  00           dlystat:    .byte $00                   ;FF=DELAY IN PROGRESS, 00=NO DELAY, 1,2=DELAY BEING READ
+000109r 1  90           laststat:   .byte $90                   ;LAST STATUS BYTE READ
+00010Ar 1  90           lastdata:   .byte $90                   ;LAST DATA BYTE PROCESSED
+00010Br 1               ;-----------------------------------------------------------------------------------------
+00010Br 1               notours:
+00010Br 1  38               sec     ;do not claim the interrupt - return to Prodos
+00010Cr 1  60               rts
+00010Dr 1               ;
+00010Dr 1               inthand:
+00010Dr 1  D8               cld         ;required for Prodos interrupt handler
+00010Er 1               imod1:
+00010Er 1  AD A1 C0         lda $C0A1   ;check clock interrupt flag
+000111r 1  10 F8            bpl notours
+000113r 1  A9 01            lda #$01
+000115r 1               imod2:
+000115r 1  8D A0 C0         sta $C0A0   ;stop clock during interrupt processing
+000118r 1               ;-----------------------------------------------------------------------------------------
+000118r 1  2C 30 C0         bit $c030   ;test interrupt processin
+00011Br 1               ;-----------------------------------------------------------------------------------------
+00011Br 1  AD rr rr         lda temporeq
+00011Er 1  F0 03            beq strtclck
+000120r 1  20 rr rr         jsr tempochg
+000123r 1               strtclck:
+000123r 1  A9 00            lda #$00    ;restart clock
+000125r 1               imod3:
+000125r 1  8D A0 C0         sta $C0A0
+000128r 1  18               clc         ;claim the interrupt
+000129r 1  60               rts
+00012Ar 1               ;-----------------------------------------------------------------------------------------
+00012Ar 1               mainend:
+00012Ar 1  00               brk
+00012Br 1               
+00012Br 1               
+00012Br 1               
+00012Br 1               
